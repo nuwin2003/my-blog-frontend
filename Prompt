@@ -1,0 +1,43 @@
+Build a modern, responsive personal tech blog frontend using React.js and Material UI (MUI v5+).
+
+Purpose: A blog for a software engineer to share technical learnings, complex bug fixes, engineering process insights, new tech/product thoughts, and ideas for peer developers.
+
+Visual Style:
+
+Color palette: soft light blue (
+#E3F2FD, 
+#90CAF9, 
+#42A5F5 as accent) on a clean white (
+#FFFFFF / 
+#FAFAFA) base, with a deep blue (
+#0D47A1 or 
+#1565C0) for primary CTAs/text highlights.
+Aesthetic: glassmorphism — frosted-glass cards (backdrop-filter: blur(12px), semi-transparent white/light-blue backgrounds, subtle 1px light borders, soft shadows), rounded corners (16–24px radius).
+Feel: minimalist, futuristic, spacious — generous whitespace, subtle gradients, soft glow accents on hover, smooth transitions/micro-interactions.
+Typography: Poppins as the primary font (fallback to Aptos where licensed/available, since Aptos isn't a standard web font — load Poppins via Google Fonts and set it as the MUI theme's default fontFamily). Use varied font weights (300/400/600/700) for hierarchy — light weight for body text, semi-bold for headings.
+
+Theme Setup:
+
+Create a custom MUI theme (createTheme) with the palette, typography, and shape (borderRadius) configured globally so all components inherit the glassy light-blue look.
+Support a subtle background: soft gradient mesh or blurred blob shapes behind glass cards for the futuristic touch.
+
+Pages/Components to include:
+
+Navbar — sticky, glassy/transparent-on-scroll, logo, nav links (Home, Categories, About, Contact), search icon, dark/light mode toggle.
+Hero section — intro/tagline, featured/latest post highlight.
+Blog listing page — responsive grid/masonry of glass post cards (title, excerpt, tags/category chips, read time, date, cover image).
+Single post page — clean reading layout, table of contents sidebar, code block styling (syntax-highlight friendly, dark glass code panels), tags, author bio card, related posts, comment section placeholder.
+Category/Tag filter bar — chip-based filters (e.g., "Bug Fixes", "New Tech", "Engineering Process", "Product Thoughts").
+About page — author profile with glass card, skills, socials.
+Footer — minimal, links + socials.
+
+Technical requirements:
+
+Functional components with React hooks.
+MUI components: AppBar, Card, Grid/Stack, Chip, Typography, Button, Drawer (mobile nav), Skeleton (loading states).
+Fully responsive (mobile-first breakpoints via MUI sx/Grid).
+Placeholder/mock data (JSON array of blog posts) with realistic dev-blog content.
+Reusable, well-organized component structure (/components, /pages, /theme, /data).
+Smooth scroll and fade-in animations on scroll (optional: framer-motion).
+
+Generate the theme file, folder structure, and key components (Navbar, PostCard, BlogGrid, single Post page) with clean, production-quality code.
