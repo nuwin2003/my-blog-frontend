@@ -1,0 +1,30 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Card, Chip, FormControlLabel, IconButton, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
+import { AddRounded, CloseRounded, CloudUploadRounded } from '@mui/icons-material';
+import MDEditor from '@uiw/react-md-editor';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAdminPosts, useCategories, useCreatePost, useUpdatePost } from '../../hooks/useBlogData';
+import { listFrom } from '../../utils/apiData';
+import { apiErrorMessage } from '../../api/axiosClient';
+import { useToast } from '../../context/ToastContext';
+
+const empty = { title: '', excerpt: '', content: '', categoryId: '', tags: [], externalUrls: [], status: 'draft', readTimeMinutes: 5, coverImage: null };
+export default function PostForm() {
+  const { id } = useParams(); const editing = Boolean(id); const navigate = useNavigate(); const { showToast } = useToast();
+  const [form, setForm] = useState(empty); const [tagText, setTagText] = useState(''); const categoriesQuery = useCategories(); const postsQuery = useAdminPosts({ limit: 100, offset: 0 });
+  const create = useCreatePost(); const update = useUpdatePost(); const categories = listFrom(categoriesQuery.data, ['categories']); const existing = useMemo(() => listFrom(postsQuery.data, ['posts']).find((p) => String(p.id) === id), [postsQuery.data, id]);
+  useEffect(() => { if (editing && existing) setForm({ ...empty, ...existing, categoryId: existing.categoryId || existing.category?.id || '', tags: existing.tags || [], externalUrls: existing.externalUrls || [] }); }, [editing, existing]);
+  const set = (key, value) => setForm((x) => ({ ...x, [key]: value }));
+  const addTag = () => { const tag = tagText.trim(); if (tag && !form.tags.includes(tag)) set('tags', [...form.tags, tag]); setTagText(''); };
+  const addUrl = () => set('externalUrls', [...form.externalUrls, { label: '', url: '' }]);
+  const submit = async (status) => {
+    if (!form.title.trim() || !form.excerpt.trim() || !form.content.trim() || !form.categoryId) {
+      showToast('Title, excerpt, content, and category are required.', 'error');
+      return;
+    }
+    const values = { ...form, status };
+    try { if (editing) await update.mutateAsync({ id, values }); else await create.mutateAsync(values); showToast(`Post ${editing ? 'updated' : 'created'}.`); navigate('/admin/posts'); } catch (e) { showToast(apiErrorMessage(e), 'error'); }
+  };
+  const busy = create.isPending || update.isPending;
+  return <Box data-color-mode="light"><Typography variant="h3">{editing ? 'Edit post' : 'Create post'}</Typography><Typography color="text.secondary" mb={4}>Write in Markdown and preview the result as you go.</Typography><Stack spacing={3}><Card sx={{ p: 3 }}><Stack spacing={2}><TextField label="Title" required value={form.title} onChange={(e) => set('title', e.target.value)} /><TextField label="Excerpt" required multiline minRows={2} value={form.excerpt} onChange={(e) => set('excerpt', e.target.value)} /><Stack direction={{ xs: 'column', sm: 'row' }} gap={2}><TextField select fullWidth label="Category" required value={form.categoryId} onChange={(e) => set('categoryId', e.target.value)}>{categories.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}</TextField><TextField label="Read time (minutes)" type="number" value={form.readTimeMinutes} onChange={(e) => set('readTimeMinutes', e.target.value)} /></Stack></Stack></Card><Card sx={{ p: 3 }}><Typography variant="h6" mb={2}>Content</Typography><MDEditor value={form.content} onChange={(value) => set('content', value || '')} height={520} /></Card><Card sx={{ p: 3 }}><Typography variant="h6" mb={2}>Cover image</Typography><Button component="label" variant="outlined" startIcon={<CloudUploadRounded />}>Choose image<input hidden type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(e) => set('coverImage', e.target.files[0])} /></Button>{form.coverImage instanceof File && <Box component="img" src={URL.createObjectURL(form.coverImage)} alt="Preview" sx={{ display: 'block', mt: 2, width: 260, maxHeight: 160, objectFit: 'cover', borderRadius: 3 }} />}</Card><Card sx={{ p: 3 }}><Typography variant="h6" mb={2}>Tags</Typography><Stack direction="row" gap={1}><TextField size="small" value={tagText} onChange={(e) => setTagText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} label="Add a tag" /><Button onClick={addTag}>Add</Button></Stack><Stack direction="row" gap={1} flexWrap="wrap" mt={2}>{form.tags.map((tag) => <Chip key={tag} label={tag} onDelete={() => set('tags', form.tags.filter((x) => x !== tag))} />)}</Stack></Card><Card sx={{ p: 3 }}><Stack direction="row" justifyContent="space-between" mb={2}><Typography variant="h6">External links</Typography><Button startIcon={<AddRounded />} onClick={addUrl}>Add link</Button></Stack>{form.externalUrls.map((item, index) => <Stack key={index} direction={{ xs: 'column', sm: 'row' }} gap={1} mb={2}><TextField label="Label" value={item.label} onChange={(e) => set('externalUrls', form.externalUrls.map((x, i) => i === index ? { ...x, label: e.target.value } : x))} /><TextField label="URL" type="url" fullWidth value={item.url} onChange={(e) => set('externalUrls', form.externalUrls.map((x, i) => i === index ? { ...x, url: e.target.value } : x))} /><IconButton onClick={() => set('externalUrls', form.externalUrls.filter((_, i) => i !== index))}><CloseRounded /></IconButton></Stack>)}</Card><Card sx={{ p: 3 }}><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} gap={2}><FormControlLabel control={<Switch checked={form.status === 'published'} onChange={(e) => set('status', e.target.checked ? 'published' : 'draft')} />} label={form.status === 'published' ? 'Published' : 'Draft'} /><Stack direction="row" gap={1}><Button variant="outlined" disabled={busy} onClick={() => submit('draft')}>Save draft</Button><Button variant="contained" disabled={busy} onClick={() => submit('published')}>Publish</Button></Stack></Stack></Card></Stack></Box>;
+}

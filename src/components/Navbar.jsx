@@ -10,8 +10,8 @@ export default function Navbar({ mode, toggleMode }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const nav = (mobile = false) => links.map(([label, to]) => (
-    <Button key={label} component={Link} to={to} onClick={() => setOpen(false)}
-      sx={{ color: location.pathname === to ? 'primary.main' : 'text.secondary', justifyContent: mobile ? 'flex-start' : 'center' }}>
+    <Button key={label} component={Link} to={to} onClick={() => { setOpen(false); if (to === '/#writing') window.setTimeout(() => document.getElementById('writing')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }}
+      sx={{ color: (to.includes('#') ? location.pathname === '/' && location.hash === '#writing' : location.pathname === to) ? 'primary.main' : 'text.secondary', justifyContent: mobile ? 'flex-start' : 'center' }}>
       {label}
     </Button>
   ));

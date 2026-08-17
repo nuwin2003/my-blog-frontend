@@ -13,7 +13,7 @@ export const getTheme = (mode = 'light') => createTheme({
       : { primary: '#EDF7FF', secondary: '#A8BDD0' },
   },
   typography: {
-    fontFamily: 'Poppins, Aptos, Inter, sans-serif',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif',
     h1: { fontWeight: 700, letterSpacing: '-0.045em' },
     h2: { fontWeight: 700, letterSpacing: '-0.035em' },
     h3: { fontWeight: 700, letterSpacing: '-0.025em' },
@@ -25,9 +25,11 @@ export const getTheme = (mode = 'light') => createTheme({
   shape: { borderRadius: 18 },
   components: {
     MuiCssBaseline: { styleOverrides: {
-      '@import': "url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap')",
-      html: { scrollBehavior: 'smooth' },
-      body: { margin: 0, overflowX: 'hidden' },
+      html: { scrollBehavior: 'smooth', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif' },
+      body: { margin: 0, overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif' },
+      '#root, button, input, textarea, select, .w-md-editor, .w-md-editor *': {
+        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif',
+      },
       '::selection': { background: '#90CAF9', color: '#0D47A1' },
     } },
     MuiButton: { styleOverrides: { root: { borderRadius: 12, paddingInline: 20 } } },
